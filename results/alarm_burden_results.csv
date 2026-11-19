@@ -1,0 +1,9 @@
+cohort,model,threshold,patient_days,total_false_alarms,false_alarms_per_patient_day,patient_sensitivity_48h_pct,median_lead_time_48h_h,patient_sensitivity_full_pct,median_lead_time_full_h
+Primary_Cohort,NEWS2 (Threshold >= 5),5.0,408.42,1295,3.17,84.6,38.0,84.6,71.0
+Primary_Cohort,XGB_static (F1-Optimal),0.7463,408.42,85,0.21,30.8,24.0,46.2,52.5
+Primary_Cohort,XGB_temporal (F1-Optimal),0.7753,408.42,133,0.33,23.1,21.0,46.2,79.0
+Primary_Cohort,XGB_temporal (Clinical Screening),0.55,408.42,1392,3.41,76.9,20.5,84.6,80.0
+Sepsis_Subgroup,NEWS2 (Threshold >= 5),5.0,64.71,286,4.42,100.0,34.0,100.0,83.0
+Sepsis_Subgroup,XGB_static (F1-Optimal),0.7463,64.71,45,0.7,50.0,24.0,50.0,24.0
+Sepsis_Subgroup,XGB_temporal (F1-Optimal),0.7753,64.71,50,0.77,50.0,24.0,50.0,50.5
+Sepsis_Subgroup,XGB_temporal (Clinical Screening),0.55,64.71,352,5.44,75.0,42.0,100.0,83.0

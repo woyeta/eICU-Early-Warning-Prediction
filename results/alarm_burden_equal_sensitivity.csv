@@ -1,0 +1,13 @@
+cohort,model,target_hour_sensitivity_pct,false_alarms_per_patient_day_at_target
+Primary_Cohort,NEWS2,34.3,3.17
+Primary_Cohort,XGB_static,34.3,5.2
+Primary_Cohort,XGB_temporal,34.3,4.52
+Primary_Cohort,LSTM,34.3,3.28
+Primary_Cohort,GRU,34.3,3.11
+Primary_Cohort,Ensemble_XGBt+RNN,34.3,4.54
+Sepsis_Subgroup,NEWS2,59.1,4.42
+Sepsis_Subgroup,XGB_static,59.1,12.56
+Sepsis_Subgroup,XGB_temporal,59.1,8.48
+Sepsis_Subgroup,LSTM,59.1,6.68
+Sepsis_Subgroup,GRU,59.1,5.78
+Sepsis_Subgroup,Ensemble_XGBt+RNN,59.1,8.04

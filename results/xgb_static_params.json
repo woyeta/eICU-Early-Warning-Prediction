@@ -1,0 +1,14 @@
+{
+  "best_params": {
+    "max_depth": 2,
+    "learning_rate": 0.04,
+    "n_estimators": 120,
+    "subsample": 0.7,
+    "colsample_bytree": 0.6,
+    "min_child_weight": 25,
+    "reg_lambda": 10.0
+  },
+  "best_val_auprc_optuna": 0.07943167099786547,
+  "optimal_f1_threshold": 0.746330976486206,
+  "n_features": 14
+}

@@ -1,0 +1,40 @@
+{
+  "NEWS2": {
+    "a": -4.176816153657257,
+    "b": 0.23909670553545342,
+    "f1_opt_threshold_raw": 5.0,
+    "f1_opt_threshold_as_calibrated_risk": 0.04827636334029478
+  },
+  "XGB_static": {
+    "a": -3.3331500687846174,
+    "b": 0.9442193552106475,
+    "f1_opt_threshold_raw": 0.746330976486206,
+    "f1_opt_threshold_as_calibrated_risk": 0.08995321424569051
+  },
+  "XGB_temporal": {
+    "a": -3.1952534200657445,
+    "b": 0.607139782115,
+    "f1_opt_threshold_raw": 0.7752577066421509,
+    "f1_opt_threshold_as_calibrated_risk": 0.07991753739682568,
+    "screening_threshold_0.55_as_calibrated_risk": 0.04421713995328481
+  },
+  "LSTM": {
+    "a": -3.2274852158925205,
+    "b": 2.953761904844862,
+    "f1_opt_threshold_raw": 0.568088710308075,
+    "f1_opt_threshold_as_calibrated_risk": 0.08181149117020647
+  },
+  "GRU": {
+    "a": -3.416283453461485,
+    "b": 1.9103297959025038,
+    "f1_opt_threshold_raw": 0.5902382731437683,
+    "f1_opt_threshold_as_calibrated_risk": 0.06185522579451079
+  },
+  "Ensemble_XGBt+RNN": {
+    "a": -3.136449669268532,
+    "b": 1.341053076117089,
+    "f1_opt_threshold_raw": 0.6567728519439697,
+    "f1_opt_threshold_as_calibrated_risk": 0.09396300763473396
+  },
+  "_method": "Platt scaling fitted on validation split; ML models on logit(p), NEWS2 on raw score"
+}

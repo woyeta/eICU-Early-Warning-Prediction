@@ -1,0 +1,60 @@
+{
+  "lstm": {
+    "config": "regularised",
+    "window_hours": 48,
+    "seeds": [
+      42,
+      43,
+      44,
+      45,
+      46
+    ],
+    "member_val_auprc": [
+      0.1174,
+      0.0741,
+      0.1574,
+      0.0711,
+      0.1574
+    ],
+    "optimal_f1_threshold": 0.568088710308075,
+    "val_f1_at_threshold": 0.12432432432432433,
+    "hidden": 32,
+    "dropout": 0.5,
+    "lr": 0.0003,
+    "weight_decay": 0.001,
+    "batch_size": 256,
+    "max_epochs": 25,
+    "early_stopping": "val AUPRC, patience 5",
+    "n_input_channels": 26,
+    "selection_rule": "max mean validation AUPRC over (config, window), 3 seeds"
+  },
+  "gru": {
+    "config": "regularised",
+    "window_hours": 6,
+    "seeds": [
+      42,
+      43,
+      44,
+      45,
+      46
+    ],
+    "member_val_auprc": [
+      0.0784,
+      0.0907,
+      0.0535,
+      0.0645,
+      0.0727
+    ],
+    "optimal_f1_threshold": 0.5902382731437683,
+    "val_f1_at_threshold": 0.10586011342155009,
+    "hidden": 32,
+    "dropout": 0.5,
+    "lr": 0.0003,
+    "weight_decay": 0.001,
+    "batch_size": 256,
+    "max_epochs": 25,
+    "early_stopping": "val AUPRC, patience 5",
+    "n_input_channels": 26,
+    "selection_rule": "max mean validation AUPRC over (config, window), 3 seeds"
+  }
+}

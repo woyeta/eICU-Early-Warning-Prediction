@@ -1,0 +1,99 @@
+feature,is_temporal_6h_feature,mean_abs_shap_primary,mean_abs_shap_sepsis,rank_primary,rank_sepsis
+hour,False,0.22124463,0.18695128,1,2
+respiration_roll_min_6h,True,0.19653645,0.21554713,2,1
+heartrate_roll_std_6h,True,0.13331547,0.11919546,3,4
+WBC x 1000,False,0.12593763,0.13691321,4,3
+WBC x 1000_roll_min_6h,True,0.1077425,0.105642244,5,6
+platelets x 1000_roll_min_6h,True,0.0946477,0.10089504,6,7
+creatinine_roll_max_6h,True,0.088009566,0.1072701,7,5
+systemicmean_roll_mean_6h,True,0.07795098,0.05501708,8,17
+spo2_roll_mean_6h,True,0.07191593,0.06587726,9,11
+spo2_roll_min_6h,True,0.07082392,0.07595702,10,8
+WBC x 1000_roll_max_6h,True,0.068645835,0.0682018,11,9
+systemicsystolic_roll_std_6h,True,0.0577659,0.057969384,12,14
+respiration_delta_6h,True,0.057033207,0.057195038,13,15
+platelets x 1000_roll_max_6h,True,0.05317603,0.062265236,14,12
+creatinine_delta_6h,True,0.052458726,0.044882968,15,22
+lactate,False,0.049707238,0.067151226,16,10
+spo2_delta_6h,True,0.04675479,0.047836307,17,20
+total bilirubin_roll_max_6h,True,0.04631728,0.038690843,18,25
+lactate_roll_min_6h,True,0.04619927,0.05717046,19,16
+lactate_roll_max_6h,True,0.0460174,0.059568923,20,13
+systemicmean_roll_min_6h,True,0.04582875,0.039754592,21,24
+platelets x 1000,False,0.043151677,0.050779402,22,18
+respiration_roll_mean_6h,True,0.04153806,0.046789885,23,21
+systemicmean_roll_max_6h,True,0.040482003,0.033609234,24,28
+total bilirubin_delta_6h,True,0.03885957,0.04460539,25,23
+systemicsystolic_roll_mean_6h,True,0.034685023,0.032286607,26,29
+heartrate_slope_6h,True,0.032979507,0.03794145,27,26
+creatinine_roll_mean_6h,True,0.03284937,0.037908178,28,27
+systemicsystolic_roll_min_6h,True,0.030945312,0.030073093,29,30
+spo2_roll_max_6h,True,0.030528437,0.024078293,30,33
+temperature_roll_max_6h,True,0.026896805,0.050218645,31,19
+creatinine_roll_min_6h,True,0.025441438,0.025731675,32,31
+WBC x 1000_delta_6h,True,0.022838043,0.024911763,33,32
+systemicsystolic_roll_max_6h,True,0.0227717,0.019911839,34,38
+systemicmean,False,0.022491602,0.020426754,35,37
+platelets x 1000_roll_mean_6h,True,0.022130566,0.02302754,36,36
+WBC x 1000_roll_mean_6h,True,0.021462983,0.019292856,37,39
+lactate_roll_mean_6h,True,0.0184448,0.023922067,38,34
+total bilirubin,False,0.018181222,0.015066309,39,44
+creatinine,False,0.017351305,0.02365571,40,35
+total bilirubin_roll_mean_6h,True,0.016846582,0.015180527,41,43
+heartrate_delta_6h,True,0.016322426,0.016732994,42,41
+creatinine_slope_6h,True,0.016231019,0.016608872,43,42
+heartrate_roll_max_6h,True,0.01509787,0.013972813,44,46
+shock_index,False,0.015011599,0.012538032,45,48
+total bilirubin_roll_min_6h,True,0.014930694,0.012538968,46,47
+systemicsystolic_slope_6h,True,0.014826649,0.014123316,47,45
+temperature_roll_mean_6h,True,0.012690409,0.018378327,48,40
+platelets x 1000_delta_6h,True,0.012022729,0.010338846,49,51
+systemicdiastolic_roll_min_6h,True,0.011910201,0.011713344,50,49
+spo2_roll_std_6h,True,0.010904713,0.011325694,51,50
+systemicdiastolic_roll_max_6h,True,0.009346274,0.0090673,52,54
+WBC x 1000_roll_std_6h,True,0.008986605,0.008830835,53,56
+systemicdiastolic,False,0.008650302,0.0088423705,54,55
+systemicsystolic_delta_6h,True,0.008330913,0.008379717,55,58
+spo2,False,0.008153096,0.008534012,56,57
+total bilirubin_slope_6h,True,0.007832232,0.009692496,57,53
+systemicdiastolic_roll_mean_6h,True,0.0075752307,0.0075497823,58,60
+temperature_roll_min_6h,True,0.006990242,0.00831515,59,59
+respiration_roll_max_6h,True,0.0066569955,0.009920983,60,52
+systemicmean_roll_std_6h,True,0.005807441,0.0051584975,61,62
+systemicsystolic,False,0.005060866,0.005066336,62,63
+platelets x 1000_slope_6h,True,0.0048960806,0.0041730497,63,64
+platelets x 1000_roll_std_6h,True,0.0047717183,0.0053013135,64,61
+total bilirubin_roll_std_6h,True,0.0044382564,0.0033694187,65,68
+heartrate_roll_min_6h,True,0.004172461,0.0039295857,66,65
+systemicdiastolic_delta_6h,True,0.003688573,0.003734612,67,66
+systemicmean_slope_6h,True,0.002805136,0.0027272883,68,70
+heartrate_roll_mean_6h,True,0.002698655,0.002371217,69,73
+systemicdiastolic_roll_std_6h,True,0.0023941104,0.0019275785,70,76
+temperature,False,0.0023372301,0.0027751355,71,69
+miss_WBC x 1000,False,0.0022628952,0.0021877133,72,74
+lactate_delta_6h,True,0.00220332,0.0034010173,73,67
+miss_platelets x 1000,False,0.002135953,0.001301983,74,78
+lactate_slope_6h,True,0.0020537374,0.0024796708,75,72
+miss_total bilirubin,False,0.0019840177,0.0020634818,76,75
+heartrate,False,0.0014100333,0.0011292832,77,81
+respiration,False,0.0014032458,0.0016648595,78,77
+respiration_roll_std_6h,True,0.0013704138,0.0026553888,79,71
+respiration_slope_6h,True,0.0012094042,0.001242099,80,80
+WBC x 1000_slope_6h,True,0.0008428241,0.001245478,81,79
+creatinine_roll_std_6h,True,0.00080481847,0.000724138,82,82
+temperature_roll_std_6h,True,0.00075474125,0.00065856025,83,83
+systemicmean_delta_6h,True,0.00033102868,0.00029788152,84,86
+miss_spo2,False,0.0003067981,0.0004200284,85,85
+temperature_delta_6h,True,0.00018868521,0.00043548035,86,84
+temperature_slope_6h,True,0.00017761275,0.00014674991,87,88
+miss_lactate,False,0.00016831646,0.00021089545,88,87
+systemicdiastolic_slope_6h,True,0.0,0.0,89,89
+spo2_slope_6h,True,0.0,0.0,90,89
+miss_heartrate,False,0.0,0.0,91,89
+miss_systemicsystolic,False,0.0,0.0,92,89
+miss_systemicdiastolic,False,0.0,0.0,93,89
+miss_systemicmean,False,0.0,0.0,94,89
+miss_temperature,False,0.0,0.0,95,89
+miss_creatinine,False,0.0,0.0,96,89
+lactate_roll_std_6h,True,0.0,0.0,97,89
+miss_respiration,False,0.0,0.0,98,89

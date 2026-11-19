@@ -1,0 +1,13 @@
+{
+  "random_seed": 42,
+  "v1_rows": 64782,
+  "v1_stays": 684,
+  "zero_patient_split_overlap": true,
+  "all_event_hours_gt_6": true,
+  "strict_pre_event_censoring_verified": true,
+  "label_definition_verified": true,
+  "feature_lists_exclude_outcome_columns": true,
+  "deterministic_test_predictions_verified": true,
+  "test_pred_temporal_sha256_round6": "d5962101e93ca110622cbf74eca7d0beefa8bc17f2f3c11f0c355d302ad6e3a4",
+  "sequence_windows_causal": true
+}

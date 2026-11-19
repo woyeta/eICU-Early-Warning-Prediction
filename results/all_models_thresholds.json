@@ -1,0 +1,44 @@
+{
+  "NEWS2": {
+    "f1_opt": 5.0,
+    "matched_sens": 5.0,
+    "f1_opt_as_calibrated_risk": 0.04827636334029478,
+    "matched_sens_as_calibrated_risk": 0.04827636334029478
+  },
+  "XGB_static": {
+    "f1_opt": 0.746330976486206,
+    "matched_sens": 0.5687613487243652,
+    "f1_opt_as_calibrated_risk": 0.08995321424569051,
+    "matched_sens_as_calibrated_risk": 0.04428596894243271
+  },
+  "XGB_temporal": {
+    "f1_opt": 0.7752577066421509,
+    "matched_sens": 0.6180690452956513,
+    "f1_opt_as_calibrated_risk": 0.07991753739682568,
+    "matched_sens_as_calibrated_risk": 0.052005441030298805
+  },
+  "LSTM": {
+    "f1_opt": 0.568088710308075,
+    "matched_sens": 0.522976675889636,
+    "f1_opt_as_calibrated_risk": 0.08181149117020647,
+    "matched_sens_as_calibrated_risk": 0.049462003644048624
+  },
+  "GRU": {
+    "f1_opt": 0.5902382731437683,
+    "matched_sens": 0.5530693517035286,
+    "f1_opt_as_calibrated_risk": 0.06185522579451079,
+    "matched_sens_as_calibrated_risk": 0.047010610539834324
+  },
+  "Ensemble_XGBt+RNN": {
+    "f1_opt": 0.6567728519439697,
+    "matched_sens": 0.5583697339432352,
+    "f1_opt_as_calibrated_risk": 0.09396300763473396,
+    "matched_sens_as_calibrated_risk": 0.05615173033324596
+  },
+  "_news2_val_hour_sensitivity": 0.28523489932885904,
+  "ensemble_rnn_member": "LSTM",
+  "sequence_windows": {
+    "lstm": 48,
+    "gru": 6
+  }
+}

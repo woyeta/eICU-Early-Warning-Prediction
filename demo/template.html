@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ICU Early Warning — Demo</title>
+<style>
+:root{
+  --bg:#F7F7F5; --card:#FFFFFF; --line:#E6E6E2; --line2:#EFEFEC;
+  --ink:#16191D; --muted:#6B7078; --faint:#A3A7AE;
+  --accent:#1C6FD1; --accent-soft:#E8F0FB;
+  --alert:#D93F3F; --alert-soft:#FCEBEB; --ok:#2F8F5B; --ok-soft:#E7F4EC; --warn:#B7791F;
+  --r:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--ink);font:15px/1.45 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.num{font-variant-numeric:tabular-nums}
+
+/* top bar */
+.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:28px;height:60px;padding:0 28px;background:rgba(247,247,245,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:650;letter-spacing:-.01em}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
+.tabs{display:flex;gap:4px}
+.tab{padding:7px 14px;border-radius:8px;color:var(--muted);font-weight:550}
+.tab:hover{color:var(--ink)}
+.tab.on{background:var(--card);color:var(--ink);box-shadow:0 0 0 1px var(--line)}
+.top .meta{margin-left:auto;color:var(--muted);font-size:13px}
+
+main{max-width:1440px;margin:0 auto;padding:24px 28px 40px}
+.view{display:none}.view.on{display:block}
+
+/* monitor layout */
+.monitor{display:grid;grid-template-columns:280px 1fr;gap:24px;align-items:start}
+.plist{position:sticky;top:84px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column;max-height:calc(100vh - 108px)}
+.plist .hd{padding:14px;border-bottom:1px solid var(--line2);display:flex;flex-direction:column;gap:10px}
+.search{width:100%;padding:8px 11px;border:1px solid var(--line);border-radius:8px;font:inherit;background:var(--bg);outline:none}
+.search:focus{border-color:var(--accent);background:#fff}
+.seg{display:flex;background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:3px;gap:2px}
+.seg button{flex:1;padding:5px 8px;border-radius:6px;color:var(--muted);font-size:13px;font-weight:550;white-space:nowrap}
+.seg button.on{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.06),0 0 0 1px var(--line)}
+.plist ul{list-style:none;overflow:auto;flex:1}
+.plist li{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line2);cursor:pointer}
+.plist li:hover{background:#FAFAF8}
+.plist li.on{background:var(--accent-soft)}
+.plist .pid{font-weight:600}
+.plist .sub{color:var(--muted);font-size:12.5px}
+.plist .grow{flex:1;min-width:0}
+.pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11.5px;font-weight:600;white-space:nowrap}
+.pill.ev{background:var(--alert-soft);color:var(--alert)}
+.pill.ok{background:var(--line2);color:var(--muted)}
+.pill.sep{background:#F3EEFB;color:#6B46C1}
+.count{color:var(--muted);font-size:12px;padding:8px 14px;border-top:1px solid var(--line2)}
+
+.pmain{display:flex;flex-direction:column;gap:16px;min-width:0}
+.phead{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.phead h1{font-size:26px;letter-spacing:-.02em;font-weight:680}
+.phead p{color:var(--muted);margin-top:2px}
+.bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.toggle{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px;cursor:pointer;user-select:none}
+.toggle input{accent-color:var(--accent)}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r)}
+.player{display:flex;align-items:center;gap:14px;padding:12px 16px}
+.play{width:36px;height:36px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;flex:none}
+.play:hover{background:#2B3036}
+.play svg{width:14px;height:14px}
+input[type=range]{flex:1;accent-color:var(--accent);height:4px}
+.hourlbl{min-width:118px;text-align:right;font-weight:600}
+.hourlbl span{color:var(--muted);font-weight:450}
+.speed{border:1px solid var(--line);border-radius:7px;padding:4px 8px;font-size:13px;color:var(--muted)}
+.speed.on{color:var(--accent);border-color:var(--accent)}
+
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.tile{padding:16px 18px}
+.tile .k{font-size:12.5px;color:var(--muted);font-weight:550;text-transform:uppercase;letter-spacing:.04em}
+.tile .v{font-size:30px;font-weight:680;letter-spacing:-.02em;margin-top:6px;line-height:1.1}
+.tile .s{font-size:13px;color:var(--muted);margin-top:6px}
+.status{display:inline-flex;align-items:center;gap:8px}
+.status i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.is-alert{color:var(--alert)} .is-alert i{background:var(--alert);box-shadow:0 0 0 4px var(--alert-soft)}
+.is-ok{color:var(--ok)} .is-ok i{background:var(--ok);box-shadow:0 0 0 4px var(--ok-soft)}
+.up{color:var(--alert)} .down{color:var(--ok)}
+
+.chartcard{padding:16px 18px 12px;position:relative}
+.ch{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.ch h3{font-size:15px;font-weight:620}
+.legend{display:flex;gap:16px;color:var(--muted);font-size:12.5px;flex-wrap:wrap}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:14px;height:0;border-top:2px solid}
+.swb{width:10px;height:10px;border-radius:2px}
+svg{display:block;width:100%}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:#fff;font-size:12.5px;padding:6px 9px;border-radius:7px;white-space:nowrap;transform:translate(-50%,-110%);opacity:0;transition:opacity .1s}
+
+.vgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.vital{padding:14px 16px 10px}
+.vital .row{display:flex;align-items:baseline;justify-content:space-between}
+.vital .name{font-size:13px;color:var(--muted);font-weight:550}
+.vital .val{font-size:22px;font-weight:680;letter-spacing:-.01em}
+.vital .val small{font-size:12px;color:var(--muted);font-weight:500;margin-left:3px}
+.vital .val.out{color:var(--warn)}
+.vital .rng{font-size:11.5px;color:var(--faint)}
+.hint{color:var(--faint);font-size:12px;text-align:right}
+kbd{font:11px ui-monospace,monospace;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:0 4px;background:#fff;color:var(--muted)}
+
+/* models view */
+.lead{max-width:760px;color:var(--muted);margin:4px 0 20px}
+h2.title{font-size:26px;letter-spacing:-.02em;font-weight:680}
+table{width:100%;border-collapse:collapse}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:600;text-align:left;padding:12px 16px;border-bottom:1px solid var(--line)}
+td{padding:14px 16px;border-bottom:1px solid var(--line2);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+td .d{color:var(--muted);font-size:12.5px}
+td .ci{color:var(--faint);font-size:12.5px;margin-left:4px}
+td b{font-weight:680}
+.best{color:var(--accent)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+.pad{padding:18px 20px}
+.pad h3{font-size:15px;font-weight:620}
+.pad p.d{color:var(--muted);font-size:13px;margin-top:2px}
+.note{margin-top:16px;padding:14px 18px;border-radius:var(--r);background:var(--accent-soft);color:#1E3A5F;font-size:14px}
+.note b{font-weight:650}
+
+/* about */
+.cols3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:20px}
+.cols3 h3{font-size:15px;font-weight:620;margin-bottom:6px}
+.cols3 p{color:var(--muted);font-size:14px}
+.flow{display:flex;align-items:stretch;gap:0;margin-top:16px;overflow-x:auto}
+.step{flex:1;min-width:150px;padding:16px 18px;border-right:1px solid var(--line2)}
+.step:last-child{border-right:0}
+.step .v{font-size:24px;font-weight:680;letter-spacing:-.02em}
+.step .s{font-size:13px;color:var(--muted)}
+
+.sec{margin-top:28px;font-size:12.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+
+footer{max-width:1440px;margin:0 auto;padding:0 28px 28px;color:var(--faint);font-size:12.5px}
+
+@media (max-width:1100px){.tiles{grid-template-columns:repeat(2,1fr)}.vgrid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:860px){.monitor{grid-template-columns:1fr}.plist{position:static;max-height:300px}.grid2,.cols3{grid-template-columns:1fr}.top .meta{display:none}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand"><span class="dot"></span>ICU Early Warning</div>
+  <nav class="tabs">
+    <button class="tab on" data-view="monitor">Monitor</button>
+    <button class="tab" data-view="models">Models</button>
+    <button class="tab" data-view="about">About</button>
+  </nav>
+  <div class="meta">eICU-CRD Demo · held-out test patients</div>
+</header>
+
+<main>
+  <!-- MONITOR -->
+  <section class="view on" id="v-monitor">
+    <div class="monitor">
+      <aside class="plist">
+        <div class="hd">
+          <input class="search" id="q" placeholder="Search patient ID" autocomplete="off">
+          <div class="seg" id="filter">
+            <button data-f="all" class="on">All</button>
+            <button data-f="ev">Deteriorated</button>
+            <button data-f="sep">Sepsis</button>
+          </div>
+        </div>
+        <ul id="plist"></ul>
+        <div class="count" id="pcount"></div>
+      </aside>
+
+      <div class="pmain">
+        <div class="phead">
+          <div>
+            <h1 id="pTitle">Patient</h1>
+            <p id="pMeta"></p>
+          </div>
+          <div class="bar">
+            <div class="seg" id="modelSeg"></div>
+            <label class="toggle"><input type="checkbox" id="cmp"> Show other models</label>
+          </div>
+        </div>
+
+        <div class="card player">
+          <button class="play" id="play" title="Play / pause (space)"></button>
+          <input type="range" id="scrub" min="0" max="1" value="1">
+          <div class="hourlbl num" id="hourlbl"></div>
+          <button class="speed" id="speed" title="Playback speed">1×</button>
+        </div>
+
+        <div class="tiles">
+          <div class="card tile"><div class="k">Risk, next 24 h</div><div class="v num" id="tRisk">–</div><div class="s" id="tRiskS"></div></div>
+          <div class="card tile"><div class="k">Status</div><div class="v" id="tStat">–</div><div class="s" id="tStatS"></div></div>
+          <div class="card tile"><div class="k">NEWS2 score</div><div class="v num" id="tNews">–</div><div class="s">Ward alert at 5 or more</div></div>
+          <div class="card tile"><div class="k">Outcome</div><div class="v" id="tOut">–</div><div class="s" id="tOutS"></div></div>
+        </div>
+
+        <div class="card chartcard" id="riskCard">
+          <div class="ch">
+            <h3 id="riskTitle">Risk of deterioration in the next 24 hours</h3>
+            <div class="legend" id="riskLegend"></div>
+          </div>
+          <svg id="risk" height="290"></svg>
+          <div class="tip" id="tip"></div>
+        </div>
+
+        <div class="vgrid" id="vgrid"></div>
+        <div class="hint"><kbd>Space</kbd> play · <kbd>←</kbd><kbd>→</kbd> step an hour · <kbd>↑</kbd><kbd>↓</kbd> change patient · click the chart to jump</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MODELS -->
+  <section class="view" id="v-models">
+    <h2 class="title">How the models compare</h2>
+    <p class="lead" id="modelsLead"></p>
+    <div class="card"><table id="mtable"></table></div>
+    <div class="grid2">
+      <div class="card pad">
+        <h3>AUROC with 95% confidence intervals</h3>
+        <p class="d">How well each model ranks risky hours above safe ones. 0.5 is a coin flip.</p>
+        <svg id="ciChart" height="230"></svg>
+      </div>
+      <div class="card pad">
+        <h3>What Temporal XGBoost looks at most</h3>
+        <p class="d">Average SHAP impact of the top features. <span style="color:var(--accent)">Blue</span> = 6-hour trend feature.</p>
+        <svg id="shapChart" height="230"></svg>
+      </div>
+    </div>
+    <div class="note" id="caveat"></div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="view" id="v-about">
+    <h2 class="title">Spotting ICU deterioration early</h2>
+    <p class="lead">An early-warning system that reads a patient’s hourly vital signs and lab results and estimates the chance they will need blood-pressure drugs, a breathing machine, or die in the next 24 hours, so staff can step in sooner.</p>
+
+    <div class="cols3">
+      <div class="card pad"><h3>The problem</h3><p>Bedside scores like NEWS2 look at a single moment. They miss slow trends and raise many false alarms, which leads to alarm fatigue.</p></div>
+      <div class="card pad"><h3>The idea</h3><p>Give models the patient’s recent history (the last 6 to 48 hours), not just the current hour, and compare them fairly with NEWS2.</p></div>
+      <div class="card pad"><h3>The data</h3><p>eICU-CRD Demo v2.0.1: real, de-identified ICU stays from 186 US hospitals, with hourly vitals, labs, drugs and outcomes.</p></div>
+    </div>
+
+    <div class="sec">Pipeline</div>
+    <div class="card flow">
+      <div class="step"><div class="v num">2,520</div><div class="s">ICU stays in the demo</div></div>
+      <div class="step"><div class="v num">684</div><div class="s">adult at-risk stays kept</div></div>
+      <div class="step"><div class="v num">64,782</div><div class="s">patient-hours, labelled</div></div>
+      <div class="step"><div class="v num">98</div><div class="s">features incl. 6 h trends</div></div>
+      <div class="step"><div class="v num">5</div><div class="s">models, one fair test set</div></div>
+      <div class="step"><div class="v num">103</div><div class="s">test patients (13 deteriorated)</div></div>
+    </div>
+
+  </section>
+</main>
+
+<footer>Research prototype on retrospective data from the eICU-CRD Demo (v2.0.1). Not for clinical use.</footer>
+
+<script>
+let DATA = /*__DATA__*/null;
+(async function boot(){
+  if(!DATA){
+    try { DATA = await (await fetch("data.json")).json(); }
+    catch(e){ document.querySelector("main").innerHTML = '<p style="padding:40px;color:#6B7078">Demo data not found. Rebuild it with: python -m src.app.build_demo</p>'; return; }
+  }
+  main();
+})();
+function main(){
+"use strict";
+const $ = s => document.querySelector(s);
+const NS = "http://www.w3.org/2000/svg";
+const MODELS = DATA.models, M = Object.fromEntries(MODELS.map(m => [m.key, m]));
+const P = DATA.patients.slice().sort((a,b) => (b.event!=null) - (a.event!=null) || a.id - b.id);
+const BYID = Object.fromEntries(P.map(p => [p.id, p]));
+const GREY = "#C9CCD1";
+const VITALS = [
+  {k:"hr",   name:"Heart rate",        unit:"bpm",  lo:51,  hi:90,  d:0},
+  {k:"map",  name:"Mean arterial pressure", unit:"mmHg", lo:65, hi:110, d:0},
+  {k:"spo2", name:"Oxygen saturation", unit:"%",    lo:96,  hi:100, d:0},
+  {k:"rr",   name:"Respiratory rate",  unit:"/min", lo:12,  hi:20,  d:0},
+  {k:"sbp",  name:"Systolic pressure", unit:"mmHg", lo:111, hi:219, d:0},
+  {k:"temp", name:"Temperature",       unit:"°C",   lo:36.1,hi:38.0,d:1},
+];
+
+const st = {p: BYID[733082] || P[0], model:"GRU", cmp:false, i:0, playing:false, speed:1, filter:"all", q:"", timer:null};
+st.i = n() - 1;
+
+function n(){ return st.p.news2.length; }
+function hourOf(i){ return st.p.h0 + i; }
+function pct(v, d=1){ return v==null ? "–" : (v*100).toFixed(d) + "%"; }
+function el(tag, attrs={}, parent){ const e=document.createElementNS(NS, tag); for(const k in attrs) e.setAttribute(k, attrs[k]); if(parent) parent.appendChild(e); return e; }
+function lastVal(arr, i){ for(let j=i;j>=0;j--) if(arr[j]!=null) return arr[j]; return null; }
+function niceMax(v){ const steps=[0.02,0.05,0.1,0.15,0.2,0.3,0.4,0.5,0.6,0.8,1]; for(const s of steps) if(v<=s) return s; return 1; }
+
+/* first warning within the 48 h before the event (same rule as the report) */
+function warnInfo(p, key){
+  const thr = M[key].thr, r = p.risk[key];
+  if(p.event!=null){
+    for(let i=0;i<r.length;i++){ const h=p.h0+i; if(h>=p.event-48 && h<p.event && r[i]!=null && r[i]>=thr) return {lead:p.event-h, hour:h}; }
+    return {lead:null};
+  }
+  let a=0, t=0; for(const v of r){ if(v!=null){ t++; if(v>=thr) a++; } }
+  return {alertHours:a, total:t};
+}
+
+/* ---------- tabs ---------- */
+document.querySelectorAll(".tab").forEach(b => b.onclick = () => {
+  document.querySelectorAll(".tab").forEach(x => x.classList.toggle("on", x===b));
+  document.querySelectorAll(".view").forEach(v => v.classList.toggle("on", v.id==="v-"+b.dataset.view));
+  if(b.dataset.view==="models") requestAnimationFrame(renderModels);
+});
+
+/* ---------- patient list ---------- */
+function visible(){
+  return P.filter(p => (st.filter==="all" || (st.filter==="ev" && p.event!=null) || (st.filter==="sep" && p.sepsis)) &&
+                       (!st.q || String(p.id).includes(st.q)));
+}
+function renderList(){
+  const ul=$("#plist"); ul.innerHTML="";
+  const vis=visible();
+  for(const p of vis){
+    const li=document.createElement("li"); if(p===st.p) li.className="on";
+    li.innerHTML = `<div class="grow"><div class="pid num">${p.id}</div><div class="sub">${p.sex} · ${p.age} y · ${p.news2.length} h</div></div>`+
+      (p.sepsis?`<span class="pill sep">Sepsis</span>`:"")+
+      (p.event!=null?`<span class="pill ev">Event h${p.event}</span>`:`<span class="pill ok">Stable</span>`);
+    li.onclick=()=>selectPatient(p);
+    ul.appendChild(li);
+  }
+  $("#pcount").textContent = `${vis.length} of ${P.length} test patients`;
+}
+$("#q").oninput = e => { st.q=e.target.value.trim(); renderList(); };
+document.querySelectorAll("#filter button").forEach(b => b.onclick = () => {
+  st.filter=b.dataset.f; document.querySelectorAll("#filter button").forEach(x=>x.classList.toggle("on",x===b)); renderList();
+});
+
+function selectPatient(p){
+  stop(); st.p=p; st.i=n()-1; renderList(); renderPatient();
+  const li=document.querySelector("#plist li.on"); if(li) li.scrollIntoView({block:"nearest"});
+}
+
+/* ---------- model selector ---------- */
+const seg=$("#modelSeg");
+for(const m of MODELS){
+  const b=document.createElement("button"); b.textContent=m.name; b.dataset.k=m.key; b.title=m.desc;
+  b.onclick=()=>{ st.model=m.key; seg.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b)); renderPatient(); };
+  if(m.key===st.model) b.className="on"; seg.appendChild(b);
+}
+$("#cmp").onchange = e => { st.cmp=e.target.checked; renderRisk(); };
+
+/* ---------- player ---------- */
+const PLAY='<svg viewBox="0 0 14 14"><path d="M3 1.5v11l9.5-5.5z" fill="currentColor"/></svg>';
+const PAUSE='<svg viewBox="0 0 14 14"><rect x="2.5" y="1.5" width="3.2" height="11" rx="1" fill="currentColor"/><rect x="8.3" y="1.5" width="3.2" height="11" rx="1" fill="currentColor"/></svg>';
+$("#play").innerHTML=PLAY;
+function stop(){ st.playing=false; clearInterval(st.timer); $("#play").innerHTML=PLAY; }
+function play(){
+  if(st.i>=n()-1) st.i=0;
+  st.playing=true; $("#play").innerHTML=PAUSE;
+  clearInterval(st.timer);
+  st.timer=setInterval(()=>{ if(st.i>=n()-1){ stop(); return; } st.i++; renderTime(); }, 1000/(6*st.speed));
+}
+$("#play").onclick = () => st.playing ? stop() : play();
+$("#scrub").oninput = e => { stop(); st.i=+e.target.value; renderTime(); };
+$("#speed").onclick = () => {
+  st.speed = st.speed===1 ? 4 : 1; $("#speed").textContent = st.speed+"×"; $("#speed").classList.toggle("on", st.speed>1);
+  if(st.playing) play();
+};
+document.addEventListener("keydown", e => {
+  if(e.target.tagName==="INPUT" && e.target.type!=="range" && e.target.type!=="checkbox") return;
+  if(!$("#v-monitor").classList.contains("on")) return;
+  if(e.code==="Space"){ e.preventDefault(); st.playing?stop():play(); }
+  else if(e.key==="ArrowRight"){ e.preventDefault(); stop(); st.i=Math.min(n()-1,st.i+1); renderTime(); }
+  else if(e.key==="ArrowLeft"){ e.preventDefault(); stop(); st.i=Math.max(0,st.i-1); renderTime(); }
+  else if(e.key==="ArrowDown"||e.key==="ArrowUp"){
+    e.preventDefault(); const vis=visible(); let k=vis.indexOf(st.p);
+    k = e.key==="ArrowDown" ? Math.min(vis.length-1,k+1) : Math.max(0,k-1);
+    if(vis[k]) selectPatient(vis[k]);
+  }
+});
+
+/* ---------- patient view ---------- */
+function renderPatient(){
+  const p=st.p;
+  $("#pTitle").textContent = `Patient ${p.id}`;
+  $("#pMeta").textContent = `${p.sex==="F"?"Female":p.sex==="M"?"Male":"Unknown"}, ${p.age} y · ${p.dx} · ${p.unit} · hospital ${p.hospital}`;
+  $("#scrub").max = n()-1;
+  const w = warnInfo(p, st.model), m=M[st.model];
+  if(p.event!=null){
+    $("#tOut").innerHTML = `<span class="is-alert">Deteriorated</span>`;
+    $("#tOutS").textContent = w.lead!=null
+      ? `at hour ${p.event} · ${m.name} warned ${w.lead} h earlier`
+      : `at hour ${p.event} · ${m.name} gave no warning in the 48 h before`;
+  } else {
+    $("#tOut").innerHTML = `<span style="color:var(--muted)">No event</span>`;
+    $("#tOutS").textContent = `${m.name} alerted in ${w.alertHours} of ${w.total} hours (false alarms)`;
+  }
+  renderTime();
+}
+
+function renderTime(){
+  const p=st.p, i=st.i, r=p.risk[st.model], m=M[st.model];
+  $("#scrub").value=i;
+  $("#hourlbl").innerHTML = `Hour ${hourOf(i)} <span>/ ${hourOf(n()-1)}</span>`;
+  const v=r[i];
+  $("#tRisk").textContent = pct(v);
+  const prev = i>=6 ? r[i-6] : null;
+  if(v!=null && prev!=null){
+    const d=(v-prev)*100, cls = d>0.05?"up":d<-0.05?"down":"";
+    $("#tRiskS").innerHTML = `<span class="${cls}">${d>=0?"▲":"▼"} ${Math.abs(d).toFixed(1)} pts</span> vs 6 h ago`;
+  } else $("#tRiskS").textContent = "Too early for a 6 h trend";
+  const on = v!=null && v>=m.thr;
+  $("#tStat").innerHTML = on ? `<span class="status is-alert"><i></i>Alert</span>` : `<span class="status is-ok"><i></i>No alert</span>`;
+  $("#tStatS").textContent = `${m.name} alert line: ${pct(m.thr)}`;
+  const ns = p.news2[i];
+  $("#tNews").innerHTML = ns==null ? "–" : (ns>=5 ? `<span class="is-alert">${ns}</span>` : ns);
+  renderRisk(); renderVitals();
+}
+
+/* ---------- risk chart ---------- */
+let geom=null;
+function renderRisk(){
+  const svg=$("#risk"), p=st.p, m=M[st.model], N=n();
+  const W=svg.clientWidth||900, H=290, L=46, R=18, T=12, B=50;
+  svg.setAttribute("viewBox",`0 0 ${W} ${H}`); svg.innerHTML="";
+  const dom = p.event!=null ? Math.max(p.event - p.h0, N-1) : N-1;
+  const keys = st.cmp ? MODELS.map(x=>x.key) : [st.model];
+  let mx = m.thr*2;
+  for(const k of keys) for(const v of p.risk[k]) if(v!=null && v>mx) mx=v;
+  const ymax=niceMax(mx*1.08);
+  const x = i => L + (dom? i/dom : 0)*(W-L-R), y = v => T + (1-v/ymax)*(H-T-B);
+  geom={x, L, R, W, dom, N};
+
+  // target window (24 h before event)
+  if(p.event!=null){
+    const a=Math.max(0,p.event-24-p.h0), b=p.event-p.h0;
+    el("rect",{x:x(a),y:T,width:Math.max(0,x(b)-x(a)),height:H-T-B,fill:"#FCEBEB",opacity:.55},svg);
+  }
+  // grid + y labels
+  for(let k=0;k<=4;k++){
+    const v=ymax*k/4, yy=y(v);
+    el("line",{x1:L,x2:W-R,y1:yy,y2:yy,stroke:"#EFEFEC"},svg);
+    el("text",{x:L-8,y:yy+4,"text-anchor":"end","font-size":11,fill:"#A3A7AE"},svg).textContent=(v*100).toFixed(ymax<0.1?1:0)+"%";
+  }
+  // x labels
+  const step = dom<=48?6:dom<=120?12:dom<=300?24:dom<=600?48:96;
+  for(let h=0;h<=dom;h+=step){
+    el("text",{x:x(h),y:H-B+16,"text-anchor":"middle","font-size":11,fill:"#A3A7AE"},svg).textContent="h"+(p.h0+h);
+  }
+  // threshold
+  el("line",{x1:L,x2:W-R,y1:y(m.thr),y2:y(m.thr),stroke:"#D93F3F","stroke-dasharray":"5 4","stroke-width":1.2},svg);
+  el("text",{x:W-R,y:y(m.thr)-6,"text-anchor":"end","font-size":11,fill:"#D93F3F",stroke:"#fff","stroke-width":4,"paint-order":"stroke"},svg).textContent=`Alert line ${pct(m.thr)}`;
+
+  const path = (arr, upto) => { let d="", pen=false; for(let i=0;i<=upto;i++){ const v=arr[i]; if(v==null){pen=false;continue;} d+=(pen?"L":"M")+x(i).toFixed(1)+" "+y(v).toFixed(1); pen=true; } return d; };
+  // future (faint)
+  el("path",{d:path(p.risk[st.model],N-1),fill:"none",stroke:"#E3E5E8","stroke-width":1.5},svg);
+  if(st.cmp) for(const k of keys) if(k!==st.model)
+    el("path",{d:path(p.risk[k],st.i),fill:"none",stroke:GREY,"stroke-width":1.2},svg);
+  el("path",{d:path(p.risk[st.model],st.i),fill:"none",stroke:"#1C6FD1","stroke-width":2.2,"stroke-linejoin":"round"},svg);
+
+  // alert strip
+  const sy=H-B+26, sw=Math.max(1,(W-L-R)/Math.max(dom,1));
+  el("text",{x:L-8,y:sy+7,"text-anchor":"end","font-size":10.5,fill:"#A3A7AE"},svg).textContent="alerts";
+  el("rect",{x:L,y:sy,width:W-L-R,height:8,rx:2,fill:"#F2F2EF"},svg);
+  const r=p.risk[st.model];
+  for(let i=0;i<=st.i;i++) if(r[i]!=null && r[i]>=m.thr) el("rect",{x:x(i)-sw/2,y:sy,width:sw+0.3,height:8,fill:"#D93F3F"},svg);
+
+  // event
+  if(p.event!=null){
+    const ex=x(p.event-p.h0);
+    el("line",{x1:ex,x2:ex,y1:T,y2:H-B,stroke:"#D93F3F","stroke-width":1.5},svg);
+    el("text",{x:ex-6,y:T+12,"text-anchor":"end","font-size":11.5,"font-weight":600,fill:"#D93F3F",stroke:"#fff","stroke-width":4,"paint-order":"stroke"},svg).textContent="Deterioration";
+  }
+  // cursor
+  const cx=x(st.i);
+  el("line",{x1:cx,x2:cx,y1:T,y2:H-B,stroke:"#16191D","stroke-opacity":.25},svg);
+  if(r[st.i]!=null) el("circle",{cx,cy:y(r[st.i]),r:4.5,fill:"#fff",stroke:"#1C6FD1","stroke-width":2.2},svg);
+  // hit area
+  const hit=el("rect",{x:L,y:T,width:W-L-R,height:H-T,fill:"transparent",style:"cursor:crosshair"},svg);
+  hit.onmousemove=ev=>tip(ev); hit.onmouseleave=()=>$("#tip").style.opacity=0;
+  hit.onclick=ev=>{ stop(); st.i=idxAt(ev); renderTime(); };
+
+  // legend
+  $("#riskLegend").innerHTML =
+    `<span><i class="sw" style="border-color:#1C6FD1"></i>${m.name}</span>`+
+    (st.cmp?`<span><i class="sw" style="border-color:${GREY}"></i>Other models</span>`:"")+
+    `<span><i class="sw" style="border-color:#D93F3F;border-top-style:dashed"></i>Alert line</span>`+
+    (p.event!=null?`<span><i class="swb" style="background:#FCEBEB"></i>24 h before event</span>`:"");
+}
+function idxAt(ev){
+  const rect=$("#risk").getBoundingClientRect(), sx=(ev.clientX-rect.left)*(geom.W/rect.width);
+  const i=Math.round((sx-geom.L)/(geom.W-geom.L-geom.R)*geom.dom);
+  return Math.max(0,Math.min(geom.N-1,i));
+}
+function tip(ev){
+  const i=idxAt(ev), p=st.p, t=$("#tip"), card=$("#riskCard").getBoundingClientRect();
+  const parts=[`<b>Hour ${hourOf(i)}</b>`, `${M[st.model].name} ${pct(p.risk[st.model][i])}`];
+  if(st.cmp) for(const m of MODELS) if(m.key!==st.model) parts.push(`${m.name} ${pct(p.risk[m.key][i])}`);
+  parts.push(`NEWS2 ${p.news2[i]??"–"}`);
+  t.innerHTML=parts.join(" · ");
+  t.style.left=(ev.clientX-card.left)+"px"; t.style.top=(ev.clientY-card.top-8)+"px"; t.style.opacity=1;
+}
+
+/* ---------- vitals ---------- */
+const vgrid=$("#vgrid");
+for(const v of VITALS){
+  const c=document.createElement("div"); c.className="card vital";
+  c.innerHTML=`<div class="row"><span class="name">${v.name}</span><span class="val num" id="v_${v.k}">–</span></div>
+               <svg id="s_${v.k}" height="64"></svg><div class="rng">Normal ${v.lo}–${v.hi} ${v.unit}</div>`;
+  vgrid.appendChild(c);
+}
+function renderVitals(){
+  const p=st.p, N=n();
+  const dom = p.event!=null ? Math.max(p.event-p.h0, N-1) : N-1;
+  for(const v of VITALS){
+    const arr=p.vit[v.k], svg=$("#s_"+v.k), W=svg.clientWidth||300, H=64, pad=6;
+    svg.setAttribute("viewBox",`0 0 ${W} ${H}`); svg.innerHTML="";
+    const vals=arr.filter(a=>a!=null);
+    const cur=lastVal(arr, st.i), out=$("#v_"+v.k);
+    if(!vals.length){ out.innerHTML=`<span style="color:var(--faint);font-size:14px;font-weight:500">not recorded</span>`; continue; }
+    let lo=Math.min(v.lo,...vals), hi=Math.max(v.hi,...vals); const sp=(hi-lo)||1; lo-=sp*.08; hi+=sp*.08;
+    const x=i=>(dom? i/dom:0)*(W-2)+1, y=a=>pad+(1-(a-lo)/(hi-lo))*(H-2*pad);
+    el("rect",{x:0,y:y(v.hi),width:W,height:Math.max(0,y(v.lo)-y(v.hi)),fill:"#EEF6F1"},svg);
+    let d="",pen=false; for(let i=0;i<=st.i;i++){ const a=arr[i]; if(a==null){pen=false;continue;} d+=(pen?"L":"M")+x(i).toFixed(1)+" "+y(a).toFixed(1); pen=true; }
+    el("path",{d,fill:"none",stroke:"#3D4450","stroke-width":1.5,"stroke-linejoin":"round"},svg);
+    if(p.event!=null){ const ex=x(p.event-p.h0); el("line",{x1:ex,x2:ex,y1:0,y2:H,stroke:"#D93F3F","stroke-opacity":.5}, svg); }
+    if(arr[st.i]!=null) el("circle",{cx:x(st.i),cy:y(arr[st.i]),r:3,fill:"#16191D"},svg);
+    if(cur==null){ out.innerHTML=`<span style="color:var(--faint);font-size:14px;font-weight:500">no reading yet</span>`; continue; }
+    const bad = cur<v.lo || cur>v.hi;
+    out.className="val num"+(bad?" out":"");
+    out.innerHTML=`${cur.toFixed(v.d)}<small>${v.unit}</small>`;
+  }
+}
+
+/* ---------- models view ---------- */
+let modelsDone=false;
+function renderModels(){
+  const ne=DATA.n_events;
+  $("#modelsLead").textContent = `Held-out test set: ${P.length} patients, ${ne} of whom deteriorated. Every model’s alert line is set so it flags the same ${DATA.target_sens.toFixed(0)}% of pre-crash hours as NEWS2 ≥ 5, so false alarms and warnings are compared fairly.`;
+  const best = (f, dir) => { const vals=MODELS.map(f).filter(v=>v!=null); return dir>0?Math.max(...vals):Math.min(...vals); };
+  const bA=best(m=>m.auroc[0],1), bP=best(m=>m.auprc[0],1), bF=best(m=>m.fa_day,-1), bW=best(m=>m.warned,1), bL=best(m=>m.lead_med,1);
+  const B=(cond, s)=> cond?`<b class="best">${s}</b>`:s;
+  let h=`<tr><th>Model</th><th>AUROC</th><th>AUPRC</th><th>False alarms / patient-day</th><th>Patients warned (≤48 h before)</th><th>Median warning time</th></tr>`;
+  for(const m of MODELS){
+    h+=`<tr><td><b>${m.name}</b><div class="d">${m.desc}</div></td>
+      <td class="num">${B(m.auroc[0]===bA,m.auroc[0].toFixed(3))}<span class="ci">${m.auroc[1].toFixed(2)}–${m.auroc[2].toFixed(2)}</span></td>
+      <td class="num">${B(m.auprc[0]===bP,m.auprc[0].toFixed(3))}<span class="ci">${m.auprc[1].toFixed(2)}–${m.auprc[2].toFixed(2)}</span></td>
+      <td class="num">${B(m.fa_day===bF,m.fa_day.toFixed(2))}</td>
+      <td class="num">${B(m.warned===bW,`${m.warned} / ${ne}`)}</td>
+      <td class="num">${m.lead_med==null?"–":B(m.lead_med===bL,m.lead_med.toFixed(0)+" h")}</td></tr>`;
+  }
+  $("#mtable").innerHTML=h;
+  $("#caveat").innerHTML = `<b>Read with care.</b> With only ${ne} deteriorating test patients the confidence intervals overlap, and paired bootstrap tests found no difference between models that is statistically significant. The history-based models look promising, but need the full eICU database and testing on unseen hospitals to confirm.`;
+  drawCI(); drawShap(); modelsDone=true;
+}
+function drawCI(){
+  const svg=$("#ciChart"), W=Math.max(360,svg.getBoundingClientRect().width||520), H=230, L=130, R=20, T=10, B=28;
+  svg.setAttribute("viewBox",`0 0 ${W} ${H}`); svg.innerHTML="";
+  const x=v=>L+(v-0.4)/(1-0.4)*(W-L-R), rowH=(H-T-B)/MODELS.length;
+  for(const t of [0.4,0.5,0.6,0.7,0.8,0.9,1]){
+    el("line",{x1:x(t),x2:x(t),y1:T,y2:H-B,stroke:t===0.5?"#C9CCD1":"#F0F0ED","stroke-dasharray":t===0.5?"4 3":""},svg);
+    el("text",{x:x(t),y:H-B+16,"text-anchor":"middle","font-size":11,fill:"#A3A7AE"},svg).textContent=t.toFixed(1);
+  }
+  MODELS.forEach((m,k)=>{
+    const yy=T+rowH*(k+.5), c=m.key===st.model?"#1C6FD1":"#3D4450";
+    el("text",{x:L-12,y:yy+4,"text-anchor":"end","font-size":12.5,fill:"#16191D"},svg).textContent=m.name;
+    el("line",{x1:x(m.auroc[1]),x2:x(m.auroc[2]),y1:yy,y2:yy,stroke:c,"stroke-width":2,"stroke-opacity":.35,"stroke-linecap":"round"},svg);
+    el("circle",{cx:x(m.auroc[0]),cy:yy,r:5,fill:c},svg);
+    el("text",{x:x(m.auroc[2])+8,y:yy+4,"font-size":11.5,fill:"#6B7078"},svg).textContent=m.auroc[0].toFixed(2);
+  });
+}
+function prettyFeat(f){
+  const base={heartrate:"Heart rate",respiration:"Resp. rate",spo2:"SpO₂",systemicsystolic:"Systolic BP",systemicdiastolic:"Diastolic BP",systemicmean:"Mean BP",temperature:"Temperature",lactate:"Lactate",creatinine:"Creatinine","WBC x 1000":"White cell count","platelets x 1000":"Platelets","total bilirubin":"Bilirubin",hour:"Hours in ICU"};
+  const m=f.match(/^(.*)_(roll_mean|roll_std|roll_min|roll_max|slope|delta)_6h$/);
+  if(m){ const s={roll_mean:"6 h average",roll_std:"6 h variability",roll_min:"6 h lowest",roll_max:"6 h highest",slope:"6 h slope",delta:"6 h change"}[m[2]]; return `${base[m[1]]||m[1]}, ${s}`; }
+  if(f.startsWith("miss_")) return `${base[f.slice(5)]||f.slice(5)} missing`;
+  return base[f]||f;
+}
+function drawShap(){
+  const svg=$("#shapChart"), W=Math.max(360,svg.getBoundingClientRect().width||520), H=230, L=200, R=40, T=4, B=6, S=DATA.shap;
+  svg.setAttribute("viewBox",`0 0 ${W} ${H}`); svg.innerHTML="";
+  const mx=Math.max(...S.map(s=>s.v)), rowH=(H-T-B)/S.length;
+  S.forEach((s,k)=>{
+    const yy=T+rowH*k, bw=Math.max(0,(s.v/mx)*(W-L-R));
+    el("text",{x:L-10,y:yy+rowH/2+4,"text-anchor":"end","font-size":12,fill:"#16191D"},svg).textContent=prettyFeat(s.f);
+    el("rect",{x:L,y:yy+rowH*.22,width:bw,height:rowH*.56,rx:3,fill:s.trend?"#1C6FD1":"#B9BDC4"},svg);
+    el("text",{x:L+bw+6,y:yy+rowH/2+4,"font-size":11,fill:"#6B7078"},svg).textContent=s.v.toFixed(2);
+  });
+}
+
+window.addEventListener("resize", ()=>{ renderRisk(); renderVitals(); if(modelsDone){drawCI();drawShap();} });
+renderList(); renderPatient();
+}
+</script>
+</body>
+</html>

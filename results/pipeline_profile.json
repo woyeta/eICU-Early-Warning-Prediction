@@ -1,0 +1,9 @@
+{
+  "extract_cohort_seconds": 0.07,
+  "temporal_alignment_seconds": 3.07,
+  "feature_engineering_seconds": 2.09,
+  "total_pipeline_seconds": 5.24,
+  "under_3_minute_target": true,
+  "output_rows": 93999,
+  "output_columns": 100
+}

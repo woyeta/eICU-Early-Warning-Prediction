@@ -1,0 +1,5 @@
+Group,Patients (N),Age Median [IQR],Female (%),ICU LOS Days Median [IQR],Sepsis Subgroup (%),ICU Mortality (%)
+All Eligible Adult ICU (Primary),684,68 [55–78],39.8%,3.3 [2.5–5.0],17.7%,4.8%
+Deteriorating Patients,90,68 [58–79],35.6%,5.8 [3.2–10.2],28.9%,36.7%
+Stable Patients,594,68 [55–78],40.4%,3.1 [2.5–4.4],16.0%,0.0%
+Secondary Sepsis Subgroup,121,67 [55–77],43.8%,3.8 [2.8–5.7],100.0%,9.9%

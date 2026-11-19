@@ -1,0 +1,7 @@
+model,cohort,auroc,auprc,f1,threshold
+NEWS2,primary,0.6285,0.0611,0.0967,5.0
+NEWS2,sepsis_subgroup,0.6305,0.0504,0.0988,5.0
+XGB_static,primary,0.6317,0.0794,0.1512,0.7463
+XGB_static,sepsis_subgroup,0.6784,0.0695,0.1188,0.7463
+XGB_temporal,primary,0.6319,0.0811,0.179,0.7753
+XGB_temporal,sepsis_subgroup,0.6911,0.0694,0.0862,0.7753
